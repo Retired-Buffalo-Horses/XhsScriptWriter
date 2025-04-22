@@ -1,0 +1,25 @@
+[
+    {
+        "model": "openai/gpt-4o-2024-11-20",
+        "api_key": "sk-or-v1-XXX",
+        "base_url": "https://openrouter.ai/api/v1",
+        "api_type": "openai",
+        "price": [0.001, 0.001],
+        "default_headers": {
+            "HTTP-Referer": "https://james.wengs.net/",
+            "X-Title": "XHS-Script-Writer-DEV"
+        },
+        "tags": ["STD"]
+    },{
+        "model": "openai/gpt-4o-mini",
+        "api_key": "sk-or-v1-XXX",
+        "base_url": "https://openrouter.ai/api/v1",
+        "api_type": "openai",
+        "price": [0.001, 0.001],
+        "default_headers": {
+            "HTTP-Referer": "https://james.wengs.net/",
+            "X-Title": "XHS-Script-Writer-DEV"
+        },
+        "tags": ["MINI"]
+    }
+]

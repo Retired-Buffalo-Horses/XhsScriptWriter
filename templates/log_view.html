@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="log-header">
+    <h1>查看日志: {{ filename }}</h1>
+    <div class="log-actions">
+        <a href="{{ url_for('logs') }}" class="back-link">返回日志列表</a>
+        {% if raw %}
+            <a href="{{ url_for('view_log', filename=filename) }}" class="view-toggle">查看格式化日志</a>
+        {% else %}
+            <a href="{{ url_for('view_log', filename=filename, raw=1) }}" class="view-toggle">查看原始日志</a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="log-content" id="logContent" data-raw="{{ raw|default(0)|int }}">
+    {% if raw %}
+        {{ content }}
+    {% else %}
+        {{ content|safe }}
+    {% endif %}
+</div>
+
+<script>
+    // 页面加载完成后自动滚动到底部
+    document.addEventListener('DOMContentLoaded', function() {
+        var logContent = document.getElementById('logContent');
+        logContent.scrollTop = logContent.scrollHeight;
+        
+        // 如果日志内容在整个页面中，也滚动整个页面到底部
+        window.scrollTo(0, document.body.scrollHeight);
+        
+        // 检查是否是原始模式
+        var isRaw = logContent.getAttribute('data-raw') === '1';
+        
+        // 如果不是原始模式，添加点击事件，使链接可点击
+        if (!isRaw) {
+            var links = document.querySelectorAll('.log-content span[style*="text-decoration: underline"]');
+            links.forEach(function(link) {
+                var text = link.textContent;
+                if (text.startsWith('http')) {
+                    link.style.cursor = 'pointer';
+                    link.title = '点击打开链接';
+                    link.addEventListener('click', function() {
+                        window.open(text, '_blank');
+                    });
+                }
+            });
+        }
+    });
+</script>
+
+<style>
+    .log-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    
+    .log-actions {
+        display: flex;
+        gap: 15px;
+    }
+    
+    .back-link, .view-toggle {
+        display: inline-block;
+        padding: 8px 15px;
+        background-color: #4a6baf;
+        color: white;
+        text-decoration: none;
+        border-radius: 4px;
+        font-size: 14px;
+        transition: background-color 0.2s;
+    }
+    
+    .back-link:hover, .view-toggle:hover {
+        background-color: #3a5a9f;
+    }
+    
+    .log-content {
+        background-color: #1e1e1e;
+        color: #f0f0f0;
+        padding: 15px;
+        font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+        white-space: pre-wrap;
+        border-radius: 5px;
+        overflow-x: auto;
+        line-height: 1.6;
+        font-size: 14px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        border: 1px solid #333;
+        max-height: 80vh; /* 限制高度以确保滚动效果 */
+        overflow-y: auto; /* 确保垂直方向可滚动 */
+    }
+    
+    /* 为不同类型的日志内容添加样式 */
+    .log-content span {
+        transition: background-color 0.2s;
+    }
+    
+    .log-content span:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+</style>
+{% endblock %} 

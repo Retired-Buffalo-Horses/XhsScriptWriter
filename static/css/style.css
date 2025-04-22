@@ -1,0 +1,339 @@
+/* 基础样式 */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --accent-color: #e74c3c;
+    --text-color: #333;
+    --light-color: #f8f9fa;
+    --dark-color: #343a40;
+    --border-radius: 4px;
+    --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--light-color);
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+/* 导航栏 */
+.navbar {
+    background-color: var(--secondary-color);
+    color: white;
+    padding: 1rem 0;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar-brand a {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.navbar-menu ul {
+    display: flex;
+    list-style: none;
+}
+
+.navbar-menu li {
+    margin-left: 1.5rem;
+}
+
+.navbar-menu a {
+    color: white;
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.navbar-menu a:hover {
+    color: var(--primary-color);
+}
+
+/* 汉堡菜单按钮 */
+.navbar-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 21px;
+    cursor: pointer;
+}
+
+.navbar-toggle span {
+    display: block;
+    height: 3px;
+    width: 100%;
+    background-color: white;
+    border-radius: 3px;
+    transition: all 0.3s ease;
+}
+
+/* 主内容区 */
+main {
+    padding: 2rem 0;
+}
+
+/* 英雄区 */
+.hero {
+    text-align: center;
+    padding: 3rem 0;
+    background-color: var(--primary-color);
+    color: white;
+    margin-bottom: 2rem;
+    border-radius: var(--border-radius);
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.hero p {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* 特性卡片 */
+.features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.feature-card {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.feature-card h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+/* CTA区域 */
+.cta-section {
+    text-align: center;
+    padding: 3rem;
+    background-color: var(--light-color);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+.cta-section h2 {
+    margin-bottom: 1rem;
+}
+
+.cta-section p {
+    margin-bottom: 1.5rem;
+}
+
+.buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.button {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    text-decoration: none;
+    font-weight: bold;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.button:hover {
+    transform: translateY(-2px);
+}
+
+.button.primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.button.primary:hover {
+    background-color: #2980b9;
+}
+
+.button.secondary {
+    background-color: var(--secondary-color);
+    color: white;
+}
+
+.button.secondary:hover {
+    background-color: #1a252f;
+}
+
+/* 页脚 */
+footer {
+    background-color: var(--dark-color);
+    color: white;
+    padding: 2rem 0;
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .navbar-toggle {
+        display: flex;
+    }
+    
+    .navbar-menu {
+        position: absolute;
+        top: 60px;
+        left: 0;
+        right: 0;
+        background-color: var(--secondary-color);
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+        z-index: 100;
+    }
+    
+    .navbar-menu.active {
+        max-height: 300px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .navbar-menu ul {
+        flex-direction: column;
+        padding: 0.5rem 0;
+    }
+    
+    .navbar-menu li {
+        margin: 0;
+        text-align: center;
+    }
+    
+    .navbar-menu a {
+        display: block;
+        padding: 0.75rem 1rem;
+    }
+    
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .features {
+        grid-template-columns: 1fr;
+    }
+    
+    .buttons {
+        flex-direction: column;
+    }
+}
+
+/* 菜单网格 */
+.menu-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+.menu-item {
+    background-color: white;
+    padding: 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.menu-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.menu-item a {
+    text-decoration: none;
+    color: var(--text-color);
+    display: block;
+}
+
+.menu-item h2 {
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+/* 日志列表样式 */
+.log-list {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 2rem;
+}
+
+.log-list th, .log-list td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.log-list th {
+    background-color: var(--light-color);
+    font-weight: bold;
+}
+
+.log-list tr:hover {
+    background-color: rgba(52, 152, 219, 0.1);
+}
+
+.log-list a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.log-list a:hover {
+    text-decoration: underline;
+}
+
+/* 日志内容查看 */
+.log-content {
+    background-color: #f5f5f5;
+    padding: 1rem;
+    border-radius: var(--border-radius);
+    white-space: pre-wrap;
+    font-family: monospace;
+    overflow-x: auto;
+    margin-top: 1rem;
+}
+
+.log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.log-header .back-link {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.log-header .back-link:hover {
+    text-decoration: underline;
+} 

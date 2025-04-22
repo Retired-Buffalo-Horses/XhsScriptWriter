@@ -1,0 +1,74 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+venv/
+env/
+ENV/
+.venv/
+.cache/
+
+# Environment files
+.env
+*.env
+
+# Media files
+*.mp3
+*.mp4
+*.wav
+*.avi
+*.mov
+
+# Project specific
+output/
+temp_*/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Misc Files
+*/*.log
+*.db
+
+# local data
+ag2_std_output_*.txt
+another_code_base/
+editorial
+*_cookies.txt
+log/*
+
+# LLM配置文件
+config/llm_config.json
+
+# 其他敏感文件
+*.pyc

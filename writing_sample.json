@@ -1,0 +1,13 @@
+{
+    "order_type": "writing",
+    "writing_topic": "中国数字经济的崛起",
+    "writing_direction": "从全球竞争力角度分析",
+    "search_score_limit": "0.85",
+    "google_keyword": "中国 数字经济 全球影响",
+    "options": {
+        "script_length": 1000,
+        "promot_file": "script_prompts/write_script_agent.prompt",
+        "process_with_outline": true,
+        "ref_sample_script": false
+    }
+} 

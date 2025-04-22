@@ -1,0 +1,306 @@
+{% extends "base.html" %}
+
+{% block extra_css %}
+<style>
+    .boss-section {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 20px;
+        margin-top: 20px;
+    }
+    
+    .empty-state {
+        text-align: center;
+        padding: 40px 0;
+        color: #6c757d;
+    }
+    
+    .text-center {
+        text-align: center;
+    }
+    
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 16px;
+    }
+    
+    .btn-primary:hover {
+        background-color: #0069d9;
+    }
+    
+    .btn-primary:disabled {
+        background-color: #6c757d;
+        cursor: not-allowed;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: bold;
+    }
+    
+    .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        min-height: 100px;
+        font-size: 16px;
+    }
+    
+    .form-group input[type="text"], .form-group input[type="number"] {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+    
+    .error-message {
+        color: #dc3545;
+        margin-top: 8px;
+        display: none;
+        font-size: 14px;
+    }
+    
+    .manual-form-container {
+        padding: 15px;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        margin-top: 15px;
+        background-color: #fff;
+    }
+    
+    .note-text {
+        font-size: 13px;
+        color: #6c757d;
+        margin-top: 5px;
+        font-style: italic;
+    }
+    
+    select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        font-size: 16px;
+    }
+    
+    .result-container {
+        display: none;
+        margin-top: 20px;
+        background-color: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 20px;
+    }
+    
+    .result-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 15px;
+        color: #343a40;
+    }
+    
+    .result-content {
+        white-space: pre-wrap;
+        line-height: 1.6;
+    }
+    
+    .loading-indicator {
+        display: none;
+        text-align: center;
+        margin-top: 20px;
+    }
+    
+    .loading-spinner {
+        width: 40px;
+        height: 40px;
+        border: 5px solid #f3f3f3;
+        border-top: 5px solid #3498db;
+        border-radius: 50%;
+        animation: spin 2s linear infinite;
+        margin: 0 auto;
+    }
+    
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>老板指令</h1>
+    <p>执行特殊指令</p>
+</div>
+
+<div class="boss-section">
+    <div id="orderForm">
+        <div id="manualFormContainer" class="manual-form-container">
+            <div class="form-group">
+                <label for="writingDirection">写作方向：</label>
+                <textarea id="writingDirection" name="writingDirection" placeholder="请输入写作方向..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="scriptLength">文章长度：</label>
+                <input type="number" id="scriptLength" name="scriptLength" value="250" min="100" max="2000">
+                <div class="note-text">请输入100-2000之间的数值</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="promptFile">提示词模板：</label>
+                <select id="promptFile" name="promptFile">
+                    <option value="script_prompts/write_script_agent.prompt">默认写作模板</option>
+                </select>
+            </div>
+            
+            <div id="manualErrorMessage" class="error-message"></div>
+        </div>
+        
+        <button id="submitOrderBtn" class="btn-primary">下旨</button>
+    </div>
+    
+    <div id="loadingIndicator" class="loading-indicator">
+        <div class="loading-spinner"></div>
+        <p>正在生成内容，请耐心等待，可能需要2～3分钟...</p>
+    </div>
+    
+    <div id="resultContainer" class="result-container">
+        <div id="resultTitle" class="result-title"></div>
+        <div id="resultContent" class="result-content"></div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const submitOrderBtn = document.getElementById('submitOrderBtn');
+        const manualErrorMessage = document.getElementById('manualErrorMessage');
+        const orderForm = document.getElementById('orderForm');
+        const loadingIndicator = document.getElementById('loadingIndicator');
+        const resultContainer = document.getElementById('resultContainer');
+        const resultTitle = document.getElementById('resultTitle');
+        const resultContent = document.getElementById('resultContent');
+        
+        // 表单字段
+        const writingDirection = document.getElementById('writingDirection');
+        const scriptLength = document.getElementById('scriptLength');
+        const promptFile = document.getElementById('promptFile');
+        
+        // 获取prompt文件列表
+        fetch('/api/prompts')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const promptFile = document.getElementById('promptFile');
+                    // 清空现有选项
+                    promptFile.innerHTML = '';
+                    // 添加新选项
+                    data.prompts.forEach(prompt => {
+                        const option = document.createElement('option');
+                        option.value = prompt;
+                        option.textContent = prompt.replace('script_prompts/', '').replace('.prompt', '');
+                        // 如果是默认模板,设置为选中
+                        if (prompt === 'script_prompts/write_script_agent.prompt') {
+                            option.selected = true;
+                        }
+                        promptFile.appendChild(option);
+                    });
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching prompts:', error);
+            });
+        
+        // 提交指令
+        submitOrderBtn.addEventListener('click', function() {
+            // 构建 JSON 字符串
+            const orderObj = {
+                order_type: "writing",
+                options: {
+                    script_length: parseInt(scriptLength.value),
+                    promot_file: promptFile.value
+                }
+            };
+            
+            const direction = writingDirection.value.trim();
+            if (direction !== '') {
+                orderObj.writing_direction = direction;
+            } else {
+                showManualError('写作方向不能为空！');
+                return;
+            }
+            
+            // 检查是否包含全角的"|"
+            const jsonStr = JSON.stringify(orderObj, null, 4);
+            if (jsonStr.includes('｜')) {
+                showManualError('内容不能包含全角的"｜"，请使用半角的"|"');
+                return;
+            }
+            
+            // 显示加载状态
+            orderForm.style.display = 'none';
+            loadingIndicator.style.display = 'block';
+            resultContainer.style.display = 'none';
+            submitOrderBtn.disabled = true;
+            
+            // 提交表单
+            submitOrder(jsonStr);
+        });
+        
+        function submitOrder(content) {
+            fetch('/create_boss_order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ content: content })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // 隐藏加载状态
+                loadingIndicator.style.display = 'none';
+                
+                if (data.success) {
+                    // 显示结果
+                    resultTitle.textContent = data.title;
+                    resultContent.textContent = data.content;
+                    resultContainer.style.display = 'block';
+                } else {
+                    // 显示错误信息并恢复表单
+                    showManualError(data.error || '生成失败，请重试');
+                    orderForm.style.display = 'block';
+                }
+                
+                submitOrderBtn.disabled = false;
+            })
+            .catch(error => {
+                // 隐藏加载状态，显示错误信息
+                loadingIndicator.style.display = 'none';
+                orderForm.style.display = 'block';
+                showManualError('提交失败，请重试');
+                submitOrderBtn.disabled = false;
+                console.error('Error:', error);
+            });
+        }
+        
+        function showManualError(message) {
+            manualErrorMessage.textContent = message;
+            manualErrorMessage.style.display = 'block';
+        }
+    });
+</script>
+{% endblock %} 
