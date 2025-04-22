@@ -1,8 +1,9 @@
 import os
 from datetime import datetime
 import json
+from functools import wraps
 
-from flask import Flask, jsonify, request, render_template
+from flask import Flask, jsonify, request, render_template, redirect, url_for, session
 from flask_cors import CORS
 from dotenv import load_dotenv
 import pytz
@@ -23,6 +24,21 @@ if not os.path.exists(logs_dir):
 # 配置
 app.config.update(DEBUG=os.getenv("FLASK_DEBUG", "True").lower() == "true", SECRET_KEY=os.getenv("FLASK_SECRET_KEY", "dev_secret_key"))
 
+# 获取环境变量中的访问码
+ACCESS_CODE = os.getenv("ACCESS_CODE", "admin123")
+
+
+# 登录验证装饰器
+def login_required(f):
+
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('logged_in'):
+            return redirect(url_for('login', next=request.url))
+        return f(*args, **kwargs)
+
+    return decorated_function
+
 
 # 上下文处理器
 @app.context_processor
@@ -35,14 +51,38 @@ def inject_now():
 app.register_blueprint(boss_bp)
 
 
+# 登录路由
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """登录页面和处理登录请求"""
+    if request.method == "POST":
+        access_code = request.form.get('access_code')
+        if access_code == ACCESS_CODE:
+            session['logged_in'] = True
+            next_page = request.args.get('next')
+            return redirect(next_page or url_for('index'))
+        else:
+            return render_template('login.html', error="访问码不正确，请重试")
+    return render_template('login.html')
+
+
+@app.route("/logout", methods=["GET"])
+def logout():
+    """登出功能"""
+    session.pop('logged_in', None)
+    return redirect(url_for('login'))
+
+
 # 路由
 @app.route("/", methods=["GET"])
+@login_required
 def index():
     """首页路由 - 菜单目录"""
     return render_template('index.html', title='为老板服务的心')
 
 
 @app.route("/logs", methods=["GET"])
+@login_required
 def logs():
     """日志查看页面 - 列出所有日志文件"""
     log_files = []
@@ -62,6 +102,7 @@ def logs():
 
 
 @app.route("/logs/<filename>", methods=["GET"])
+@login_required
 def view_log(filename):
     """查看特定日志文件内容"""
     file_path = os.path.join(logs_dir, filename)
@@ -184,12 +225,14 @@ def convert_ansi_to_html(text):
 
 
 @app.route("/boss", methods=["GET"])
+@login_required
 def boss_commands():
     """老板指令页面"""
     return render_template('boss.html', title='老板指令')
 
 
 @app.route("/create_boss_order", methods=["POST"])
+@login_required
 def create_boss_order():
     """创建老板指令并直接同步调用脚本生成服务"""
     try:

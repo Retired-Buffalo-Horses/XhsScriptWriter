@@ -31,6 +31,11 @@
                     <ul>
                         <li><a href="{{ url_for('logs') }}">日志查看</a></li>
                         <li><a href="{{ url_for('boss.boss_commands') }}">老板指令</a></li>
+                        {% if session.get('logged_in') %}
+                        <li><a href="{{ url_for('logout') }}">注销</a></li>
+                        {% else %}
+                        <li><a href="{{ url_for('login') }}">登录</a></li>
+                        {% endif %}
                     </ul>
                 </div>
             </div>

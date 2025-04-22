@@ -66,6 +66,8 @@ another_code_base/
 editorial
 *_cookies.txt
 log/*
+script_prompts/write_script_agent.prompt
+script_sample.txt
 
 # LLM配置文件
 config/llm_config.json
