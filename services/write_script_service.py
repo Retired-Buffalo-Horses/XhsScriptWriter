@@ -93,8 +93,8 @@ class WriteScriptService:
         self.llm_config_mini = self.__load_config(self.llm_config_path, "MINI")
 
         # 设定本服务需要的模型的温度
-        self.llm_config._model.temperature = 0.5
-        self.llm_config_mini._model.temperature = 0.3
+        self.llm_config._model.temperature = 1.5
+        self.llm_config_mini._model.temperature = 0.5
 
         # 预定义所有agent
         self.write_direction_agent = None
